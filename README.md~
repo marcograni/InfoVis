@@ -16,16 +16,8 @@ Il dataset dal quale sono state estratte le informazioni contiene circa 98000 fo
 ---------------
 Nell'implementazione vengono prima definiti gli elementi di scena e settati i fattori di luce, luminosità e camera. Inizia poi la fase di processamento per mesi, che vengono visualizzati all'apertura del progetto; si accede così al file contenente tutte le informazioni precedentemente creato e si crea un oggetto "padre" per ogni mese; ad ognuno di questi oggetti vengono attaccati tanti figli quanti sono i luoghi visitati in quel mese, ognuno con una certa posizione definita dalla latitudine e longitudine del posto e con una certa grandezza, definita usanfo una funzione logaritmica, così da far comunque vedere i luoghi con un count piccolo, e non far apparire enormi i luoghi con un count grande. Tutti questi oggetti vengono poi attaccati alla scena in posizioni diverse così da meglio distinguerli.
 
-![Mappa con visione "per mesi"](ProjectInfiVis/screenshot/progetto1.jpg)
-------------------
-
 Viene poi configurato un controller che prìermette di decidere quale tra i mesi presenti vogliamo espandere per meglio visualizzare i dati; quando viene selezionato un mese, il programma rimuove dalla scena l'oggerro "padre" per quel mese e ne aggiunge uno nuovo, al quale vengono aggiunti tutti i luoghi suddivisi per giorni in quel mese. I vari colori e l'altezza differenziano i vari giorni tra di loro per ogni singlolo posto, inoltre la grandezza dei toroidi identifica la differenza dei count per ogni giorno. Oltre a questo, sopra ogni luogo viene creata una scritta in 3D con il nome del luogo, per meglio riconoscerlo; infine ogni segmento verticale che identifica il luogo nella mappa, cambia colore, rispetto a quello univoco che si ha rispetto alla visualizzazione per mesi, così da distinguere i luoghi del mese selezionato da quello degli altri mesi, se i luoghi sono troppo vicini. Sono state aggiunte anche delle piccole particolarità per una migliore navigazione e visualizzazione delle informazioni: per prima cosa, selezionando i mesi alti la camera cambia puntamento e guarda l'oggetto appena aggiunto così che ci si può focalizzare sul mese selezionato.Inoltre, altra cosa che viene modificata è la posizione del piano con la mappa, che si alza in base al mese scelto, così che si riesce a capire la posizione dei luoghi anche per i mesi che stanno più in alto nella rappresentazione.
 Quando da un mese, poi, se ne seleziona un altro, grazie alla memoria del mese precedentemente aperto, si ripristina la visualizzazione "per mese" del mese prima espanso, e si apre quella del mese scelto.
-
-![Mappa con visione "per giorni"](ProjectInfiVis/screenshot/progetto2.jpg)
-------------------
-![Mappa con visione "per giorni"](ProjectInfiVis/screenshot/progetto3.jpg)
-------------------
 
 ## Conclusioni
 ---------------
