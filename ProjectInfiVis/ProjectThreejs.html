@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>People Flow Rome 2015</title>
+  <style>
+    body{
+      margin: 0;
+      overflow: hidden;
+    }
+    #stats {  /* Align stats top-left */
+      position: absolute;
+      left: 0px;
+      top: 0px;
+    }
+  </style>
+  </head>
+  <body>
+  <script src="assets/libs/jquery.min.js"></script>
+  <script src="assets/libs/three.min.js"></script>
+  <script src="assets/libs/Stats.min.js"></script>
+  <script src="assets/libs/dat.gui.min.js"></script>
+  <script src="assets/data/2015month.js"></script>
+  <script src="assets/data/2015days.js"></script>
+  <script src="assets/libs/Lut.js"></script>
+  <script src="fonts/gentilis_bold.typeface.js"></script>
+  <script src="fonts/gentilis_regular.typeface.js"></script>
+  <script src="fonts/optimer_bold.typeface.js"></script>
+  <script src="fonts/optimer_regular.typeface.js"></script>
+  <script src="fonts/helvetiker_bold.typeface.js"></script>
+  <script src="fonts/helvetiker_regular.typeface.js"></script>
+  <script src="fonts/droid_sans_regular.typeface.js"></script>
+  <script src="fonts/droid_sans_bold.typeface.js"></script>
+  <script src="fonts/droid_serif_regular.typeface.js"></script>
+  <script src="fonts/droid_serif_bold.typeface.js"></script>
+  <script src="assets/libs/TrackballControls.js"></script>
+  <!-- Javascript code that runs our Three.js -->
+  <script>
+    $(function () {
+
+      var parameters;
+      var stats = initStats();
+
+      // create a scene, that hold all our elements such as objects, cameras and lights.
+      var scene = new THREE.Scene();
+
+      // create a camera, which defines where the camera focus on.
+      var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 3000);
+
+      // create a render and set the size and the color of the background
+      var webGLRenderer = new THREE.WebGLRenderer();
+      webGLRenderer.setClearColor(new THREE.Color(0xaaaaaa, 1.0));
+      webGLRenderer.setSize(window.innerWidth, window.innerHeight);
+
+      // create trackball controls
+      var trackballControls = new THREE.TrackballControls(camera);
+
+      // position and point the camera to the center of the scene
+      camera.position.set(-30,60,30);
+
+      // create the ground plane and apply the texture
+      var planeGeometry = new THREE.PlaneGeometry(1000,1000);
+      var texture = THREE.ImageUtils.loadTexture("textures/toner_Roma.png")
+      var mat = new THREE.MeshPhongMaterial();
+      mat.map = texture;
+      var plane = new THREE.Mesh(planeGeometry, mat);
+
+      // add spotlight for a bit of light
+      var spotLight0 = new THREE.SpotLight(0xeeeeee);
+      spotLight0.position.set(-40, 1600, -10);
+      spotLight0.lookAt(plane);
+      scene.add(spotLight0);
+
+      // rotate and position the plane to center the real map
+      plane.rotation.x=-0.5*Math.PI;
+      plane.rotation.z=-Math.PI/2.15;
+
+      //add the axis helper
+      var axisHelper = new THREE.AxisHelper( 50 );
+      plane.add( axisHelper );
+
+      // add the plane to the scene
+      plane.position.y=-10;
+      scene.add(plane);
+
+      //create objects to define a colour for each day and month
+      var colday={
+        Monday: 0x000000,
+        Tuesday: 0x00ffff,
+        Wednesday: 0xff00ff,
+        Thursday: 0xffff00,
+        Friday: 0x0000ff,
+        Saturday: 0x00ff00,
+        Sunday: 0xff0000
+      }
+
+      var colmonth=[0x0033FF,0x0099FF,0x00FFFF,0x009900,0x00CC00,0x66FF00,0xFFFF00,0xFFCC00,0xFF9900,0xFF6600,0xFF3300,0xFF0000];
+
+      //object for the rappresentation of the days
+      var  obj = new THREE.Object3D();
+
+      //array of object for the months
+      var  obje=[];
+      for (var i = 0; i < 12; i++) {
+        obje.push(new THREE.Object3D())
+      }
+
+      //filter to define the granularity of the object representing che count of places
+      var filter=4;
+
+      //memory of month beforehand visualized
+      var meseold=0;
+
+      //glogal definition of geometries for the rappresentation
+      var cubeGeometry = new THREE.BoxGeometry(0.03,100,0.03);
+      var cubeMaterial = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
+
+      //global definition of Text
+      var materialFront = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+      var materialSide = new THREE.MeshBasicMaterial( { color: 0x000088 } );
+      var materialArray = [ materialFront, materialSide ];
+      var textMaterial = new THREE.MeshFaceMaterial(materialArray);
+
+      //preprocessing of file that contains all places of every month
+      for (var j in year2015month) {
+        for (var x in year2015month[j].places) {
+          if (year2015month[j].places[x].count>filter) {
+
+          //define color and size of every geometry
+          var torusMaterial = new THREE.MeshBasicMaterial( { color: colmonth[j-1] } )
+          var torusGeometry = new THREE.TorusGeometry(Math.log10(year2015month[j].places[x].count/3)*15,Math.log10(year2015month[j].places[x].count)/1.8,15,15);
+          var torus = new THREE.Mesh(torusGeometry,torusMaterial);
+
+          torus.rotation.x=-Math.PI/2
+          torus.position.set(year2015month[j].places[x].coord["latitude"]*4800,j,year2015month[j].places[x].coord["longitude"]*4800);
+
+          obje[j-1].add(torus);
+
+          var cube = new THREE.Mesh(cubeGeometry,cubeMaterial);
+          cube.position.set(year2015month[j].places[x].coord["latitude"]*4800,25,year2015month[j].places[x].coord["longitude"]*4800);
+          obje[j-1].add(cube);
+
+          }
+
+          obje[j-1].position.set(-201173,(j-1)*25,-59930  );
+          scene.add(obje[j-1])
+        }
+      }
+
+      // add the output of the renderer to the html element
+      $('body').append(webGLRenderer.domElement);
+
+      // call the render function
+      var step = 0;
+
+      var mesi= new function(){
+        this.mese=0;
+
+        this.meseselected=function(){
+
+          //delete the selected month and show all the days of the month
+          scene.remove(obje[mesi.mese-1])
+          scene.remove(obj)
+          obj=new THREE.Object3D();
+
+          if (mesi.mese!=0) {
+          scene.add(obje[meseold-1])
+          meseold=mesi.mese;
+          //compute at runtime all days of selected month
+          for (var j in year2015day[mesi.mese].day) {
+            for (var x in year2015day[mesi.mese].day[j].places) {
+
+              var torusMaterial = new THREE.MeshBasicMaterial( { color: colday[year2015day[mesi.mese].day[j].dayofweek] } )
+              var torusGeometry = new THREE.TorusGeometry(Math.log10(year2015day[mesi.mese].day[j].places[x].count/3)*17,Math.log10(year2015day[mesi.mese].day[j].places[x].count)/1.5,15,15);
+              var torus = new THREE.Mesh(torusGeometry,torusMaterial);
+
+              torus.rotation.x=-Math.PI/2
+              torus.position.set(year2015day[mesi.mese].day[j].places[x].coord["latitude"]*4800,year2015day[mesi.mese].day[j].day,year2015day[mesi.mese].day[j].places[x].coord["longitude"]*4800);
+
+              obj.add(torus);
+
+              var textGeom = new THREE.TextGeometry(year2015day[mesi.mese].day[j].places[x].name ,
+              	{
+              		size: 1.7, height: 0.3, curveSegments: 3,
+              		font: "helvetiker", weight: "normal", style: "normal",
+              		bevelThickness: 1,
+              		material: 0, extrudeMaterial: 1
+              	});
+
+              	var textMesh = new THREE.Mesh(textGeom, textMaterial );
+
+              	textGeom.computeBoundingBox();
+              	var textWidth = textGeom.boundingBox.max.x - textGeom.boundingBox.min.x;
+              	textMesh.position.set( 0, 10, 0 );
+
+                //local definition
+                var cubeGeometry = new THREE.BoxGeometry(0.04,50,0.04);
+                var cubeMaterial = new THREE.MeshBasicMaterial( { color: colmonth[j-1] } );
+                var cube = new THREE.Mesh(cubeGeometry,cubeMaterial);
+                cube.position.set(year2015day[mesi.mese].day[j].places[x].coord["latitude"]*4800,25,year2015day[mesi.mese].day[j].places[x].coord["longitude"]*4800);
+
+                obj.add(cube);
+              	cube.add(textMesh);
+
+            }
+
+            obj.position.set(-201173,(mesi.mese-1)*25-12,-59930);
+            scene.add(obj)
+
+            //translate the plane
+            if (mesi.mese>2) {
+              plane.position.y=(mesi.mese-1)*25-50;
+            }
+            else {
+              plane.position.y=-10
+            }
+
+            //change the target of camera
+            trackballControls.target.set(10,obj.position.y+20,10);
+
+        }
+      }
+        else{
+          scene.remove(obj);
+          trackballControls.target.set(0,100,0);
+          scene.add(obje[meseold-1])
+          plane.position.y=-10;
+        }
+      }
+    }
+
+  //create the legend
+  var FizzyText = function() {
+
+    this.monday = colday.Monday;
+    this.tuesday = colday.Tuesday;
+    this.wednesday = colday.Wednesday;
+    this.thursday = colday.Thursday;
+    this.friday = colday.Friday;
+    this.saturday = colday.Saturday;
+    this.sunday = colday.Sunday;
+
+  };
+
+  var text = new FizzyText();
+
+  //controller
+  var gui = new dat.GUI();
+  gui.addColor( text, 'monday');
+  gui.addColor( text, 'tuesday');
+  gui.addColor( text, 'wednesday');
+  gui.addColor( text, 'thursday');
+  gui.addColor( text, 'friday');
+  gui.addColor( text, 'saturday');
+  gui.addColor( text, 'sunday');
+
+  var f = gui.addFolder('Afflusso anno 2015');
+  var fsub = f.addFolder('mesi');
+  fsub.add(mesi,'mese',0,12).step(1).onChange(mesi.meseselected);
+
+  render();
+
+
+  function render() {
+      stats.update();
+      trackballControls.update();
+      requestAnimationFrame(render);
+      webGLRenderer.render(scene, camera);
+  }
+
+  function initStats() {
+    var stats = new Stats();
+    stats.setMode(0);
+    $('body').append(stats.domElement);
+    return stats;
+  }
+})
+
+  </script>
+ </body>
+</html>
