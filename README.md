@@ -1,5 +1,6 @@
 #Concentrazione delle Persone nel 2015 a Roma
 ---------------------------------------------------
+[Demo](http://52.40.120.58/ProjectInfiVis/ProjectThreejs.html)
 
 ## Introduzione
 ---------------
@@ -30,5 +31,3 @@ Quando da un mese, poi, se ne seleziona un altro, grazie alla memoria del mese p
 ## Conclusioni
 ---------------
 Il sistema così sviluppato, ci permette una visualizzazione dei dati su più livelli di granularità, così da poter confrontare i dati sotto più punti di vista; grazie poi all'espansione "per giorni" è stato possibile notare informazioni che altrimenti non avremmo potuto notare: per esempio luoghi che sono vicini spazialmente ed hanno per alcuni giorni un afflusso di un certo tipo, ci possono far pensare ad un movimento di un flusso di persone da una parte ad un'altra; inoltre visualizzare i giorni della settimana suddivisi per colori, ci ha permesso invece di notare luoghi in cui l'afflusso avviene solo in certi giorni, come magari il sabato o la domenica, ed altri in cui l'afflusso è costante tutti i giorni.
-
-[Demo](http://52.40.120.58/ProjectInfiVis/ProjectThreejs.html)
