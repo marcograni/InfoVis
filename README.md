@@ -1,6 +1,6 @@
 #Concentrazione delle Persone nel 2015 a Roma
 ---------------------------------------------------
-[Demo](http://52.40.120.58/ProjectInfiVis/ProjectThreejs.html)
+Link per visualizzare la [Demo](http://52.40.120.58/ProjectInfiVis/ProjectThreejs.html)
 
 ## Introduzione
 ---------------
